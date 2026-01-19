@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Baddie Finder - Pitch Deck</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Changa+One:ital@0;1&family=Montserrat+Alternates:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap"
+        rel="stylesheet">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* ===== CSS RESET & VARIABLES ===== */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Brand Colors */
+            --color-green: #65AF70;
+            --color-orange: #FF7B4A;
+            --color-pink: #EBAFD3;
+            --color-peach: #FFE5C9;
+
+            /* Extended Palette */
+            --color-dark: #0d0d1a;
+            --color-dark-secondary: #1a1a2e;
+            --color-dark-tertiary: #252542;
+            --color-white: #ffffff;
+            --color-text-muted: rgba(255, 255, 255, 0.7);
+
+            /* Gradients */
+            --gradient-primary: linear-gradient(135deg, var(--color-orange), var(--color-pink));
+            --gradient-secondary: linear-gradient(135deg, var(--color-green), var(--color-orange));
+            --gradient-accent: linear-gradient(135deg, var(--color-pink), var(--color-peach));
+
+            /* Typography */
+            --font-display: 'Changa One', sans-serif;
+            --font-body: 'Montserrat Alternates', sans-serif;
+
+            /* Spacing */
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 2rem;
+            --spacing-lg: 4rem;
+            --spacing-xl: 6rem;
+        }
+
+        /* ===== BASE STYLES ===== */
+        html {
+            scroll-behavior: smooth;
+            scroll-snap-type: y mandatory;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--color-dark);
+            color: var(--color-white);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* ===== ZIGZAG PATTERN ===== */
+        .zigzag-top,
+        .zigzag-bottom {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 40px;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .zigzag-top {
+            top: 0;
+            background:
+                linear-gradient(135deg, var(--color-orange) 25%, transparent 25%) -20px 0,
+                linear-gradient(225deg, var(--color-orange) 25%, transparent 25%) -20px 0,
+                linear-gradient(315deg, var(--color-orange) 25%, transparent 25%),
+                linear-gradient(45deg, var(--color-orange) 25%, transparent 25%);
+            background-size: 40px 40px;
+            opacity: 0.15;
+        }
+
+        .zigzag-bottom {
+            bottom: 0;
+            background:
+                linear-gradient(135deg, var(--color-pink) 25%, transparent 25%) -20px 0,
+                linear-gradient(225deg, var(--color-pink) 25%, transparent 25%) -20px 0,
+                linear-gradient(315deg, var(--color-pink) 25%, transparent 25%),
+                linear-gradient(45deg, var(--color-pink) 25%, transparent 25%);
+            background-size: 40px 40px;
+            opacity: 0.15;
+        }
+
+        /* ===== SLIDE STRUCTURE ===== */
+        .slide {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: var(--spacing-lg);
+            position: relative;
+            scroll-snap-align: start;
+            overflow: hidden;
+        }
+
+        .slide::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(ellipse at 30% 20%, rgba(101, 175, 112, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 80%, rgba(255, 123, 74, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .slide-content {
+            max-width: 1200px;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===== TYPOGRAPHY ===== */
+        .slide-title {
+            font-family: var(--font-display);
+            font-size: clamp(2.5rem, 6vw, 5rem);
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: var(--spacing-md);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .slide-subtitle {
+            font-family: var(--font-body);
+            font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+            color: var(--color-text-muted);
+            font-weight: 300;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        /* ===== GLASSMORPHISM CARDS ===== */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: var(--spacing-md);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        /* ===== BULLET POINTS ===== */
+        .bullet-list {
+            list-style: none;
+            display: grid;
+            gap: var(--spacing-sm);
+        }
+
+        .bullet-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--spacing-sm);
+            font-size: clamp(1rem, 1.8vw, 1.25rem);
+            font-weight: 400;
+            color: var(--color-white);
+            padding: var(--spacing-sm);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .bullet-list li:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .bullet-list li::before {
+            content: '';
+            width: 12px;
+            height: 12px;
+            min-width: 12px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            margin-top: 8px;
+        }
+
+        /* ===== NUMBERED STEPS ===== */
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-md);
+        }
+
+        .step-card {
+            text-align: center;
+            padding: var(--spacing-md);
+        }
+
+        .step-number {
+            font-family: var(--font-display);
+            font-size: 4rem;
+            background: var(--gradient-secondary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .step-title {
+            font-family: var(--font-body);
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--color-white);
+        }
+
+        /* ===== CHART CONTAINERS ===== */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin: var(--spacing-md) auto;
+        }
+
+        .chart-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-lg);
+            align-items: center;
+        }
+
+        @media (max-width: 768px) {
+            .chart-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ===== HERO SLIDE SPECIFIC ===== */
+        .hero-title {
+            font-family: var(--font-display);
+            font-size: clamp(3rem, 10vw, 8rem);
+            text-align: center;
+            line-height: 1.1;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .hero-title .gradient-text {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-tagline {
+            font-size: clamp(1rem, 2vw, 1.4rem);
+            text-align: center;
+            color: var(--color-text-muted);
+            font-weight: 300;
+            max-width: 700px;
+            margin: 0 auto var(--spacing-lg);
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            padding: var(--spacing-xs) var(--spacing-md);
+            background: rgba(255, 123, 74, 0.15);
+            border: 1px solid rgba(255, 123, 74, 0.3);
+            border-radius: 100px;
+            font-size: 0.9rem;
+            color: var(--color-orange);
+            font-weight: 500;
+        }
+
+        /* ===== DECORATIVE ELEMENTS ===== */
+        .floating-shape {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.3;
+            pointer-events: none;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translate(0, 0);
+            }
+
+            25% {
+                transform: translate(30px, -30px);
+            }
+
+            50% {
+                transform: translate(-20px, 20px);
+            }
+
+            75% {
+                transform: translate(20px, 30px);
+            }
+        }
+
+        .shape-1 {
+            width: 400px;
+            height: 400px;
+            background: var(--color-orange);
+            top: -100px;
+            right: -100px;
+        }
+
+        .shape-2 {
+            width: 300px;
+            height: 300px;
+            background: var(--color-pink);
+            bottom: -50px;
+            left: -50px;
+            animation-delay: -5s;
+        }
+
+        .shape-3 {
+            width: 200px;
+            height: 200px;
+            background: var(--color-green);
+            top: 50%;
+            left: 10%;
+            animation-delay: -10s;
+        }
+
+        /* ===== NAVIGATION DOTS ===== */
+        .nav-dots {
+            position: fixed;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .nav-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-dot:hover {
+            background: rgba(255, 255, 255, 0.5);
+            transform: scale(1.3);
+        }
+
+        .nav-dot.active {
+            background: var(--color-orange);
+            box-shadow: 0 0 15px rgba(255, 123, 74, 0.5);
+        }
+
+        /* ===== SLIDE NUMBER ===== */
+        .slide-number {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* ===== GRID LAYOUTS ===== */
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-lg);
+            align-items: center;
+        }
+
+        @media (max-width: 900px) {
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ===== BUSINESS MODEL CARDS ===== */
+        .model-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: var(--spacing-md);
+        }
+
+        .model-card {
+            text-align: center;
+            padding: var(--spacing-md);
+        }
+
+        .model-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto var(--spacing-sm);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+        }
+
+        .model-card:nth-child(1) .model-icon {
+            background: rgba(101, 175, 112, 0.2);
+        }
+
+        .model-card:nth-child(2) .model-icon {
+            background: rgba(255, 123, 74, 0.2);
+        }
+
+        .model-card:nth-child(3) .model-icon {
+            background: rgba(235, 175, 211, 0.2);
+        }
+
+        .model-card:nth-child(4) .model-icon {
+            background: rgba(255, 229, 201, 0.2);
+        }
+
+        .model-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .model-desc {
+            color: var(--color-text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* ===== VISION STATEMENT ===== */
+        .vision-box {
+            background: var(--gradient-primary);
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-radius: 16px;
+            text-align: center;
+            margin-top: var(--spacing-md);
+        }
+
+        .vision-label {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            opacity: 0.8;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .vision-text {
+            font-family: var(--font-display);
+            font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .nav-dots {
+                right: 15px;
+            }
+
+            .slide {
+                padding: var(--spacing-md);
+            }
+
+            .slide-number {
+                bottom: 15px;
+                left: 15px;
+            }
+        }
+
+        /* ===== SCROLL INDICATOR ===== */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            color: var(--color-text-muted);
+            font-size: 0.8rem;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateX(-50%) translateY(0);
+            }
+
+            40% {
+                transform: translateX(-50%) translateY(-10px);
+            }
+
+            60% {
+                transform: translateX(-50%) translateY(-5px);
+            }
+        }
+
+        .scroll-indicator svg {
+            width: 24px;
+            height: 24px;
+            stroke: var(--color-text-muted);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation Dots -->
+    <nav class="nav-dots" id="navDots"></nav>
+
+    <!-- SLIDE 1: Hero -->
+    <section class="slide" id="slide-1">
+        <div class="zigzag-top"></div>
+        <div class="floating-shape shape-1"></div>
+        <div class="floating-shape shape-2"></div>
+
+        <div class="slide-content" style="text-align: center;">
+            <div class="hero-badge">
+                <span>🚀</span>
+                <span>AI-First Platform</span>
+            </div>
+            <h1 class="hero-title">
+                AI <span class="gradient-text">Baddie</span> Finder
+            </h1>
+            <p class="hero-tagline">
+                AI-powered discovery of high-intent, high-attraction matches.<br>
+                An AI-first social discovery platform for Gen Z & creator culture.
+            </p>
+        </div>
+
+        <div class="scroll-indicator">
+            <span>Scroll to explore</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 5v14M5 12l7 7 7-7" />
+            </svg>
+        </div>
+
+        <span class="slide-number">01 / 11</span>
+        <div class="zigzag-bottom"></div>
+    </section>
+
+    <!-- SLIDE 2: Rise of Heartbreaks -->
+    <section class="slide" id="slide-2">
+        <div class="zigzag-top"></div>
+        <div class="floating-shape shape-2"></div>
+        <div class="floating-shape shape-3"></div>
+
+        <div class="slide-content" style="text-align: center;">
+            <div class="hero-badge"
+                style="background: rgba(235, 175, 211, 0.15); border-color: rgba(235, 175, 211, 0.3); color: var(--color-pink);">
+                <span></span>
+                <span>Baddies are Bad but Guys like them</span>
+            </div>
+            <h2 class="slide-title" style="margin-top: var(--spacing-md);">The Rise in 💔 'Coz of Baddies</h2>
+            <p class="slide-subtitle" style="max-width: 700px; margin: 0 auto var(--spacing-md);">
+                Because Baddies existed before AI — and chaos followed.
+            </p>
+
+            <div class="glass-card" style="max-width: 900px; margin: 0 auto;">
+                <h3
+                    style="font-family: var(--font-display); font-size: 1.4rem; margin-bottom: var(--spacing-md); background: var(--gradient-accent); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                    📈 Global Heartbreak Index Caused by "Baddies" (2015–2025)
+                </h3>
+                <div class="chart-container" style="max-width: 800px; height: 350px;">
+                    <canvas id="heartbreakChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <span class="slide-number">02 / 11</span>
+        <div class="zigzag-bottom"></div>
+    </section>
+
+    <!-- SLIDE 3: The Problem -->
+    <section class="slide" id="slide-3">
+        <div class="zigzag-top"></div>
+        <div class="floating-shape shape-3"></div>
+
+        <div class="slide-content">
+            <div class="two-column">
+                <div>
+                    <h2 class="slide-title">The Problem</h2>
+                    <ul class="bullet-list">
+                        <li>Endless swiping and decision fatigue</li>
+                        <li>High ghosting, low-quality matches</li>
+                        <li>Attractiveness, intent, and compatibility are disconnected</li>
+                        <li>Creators struggle with quality discovery, not attention</li>
+                    </ul>
+                </div>
+                <div class="glass-card">
+                    <div class="chart-container">
+                        <canvas id="problemChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <span class="slide-number">03 / 11</span>
+        <div class="zigzag-bottom"></div>
+    </section>
+
+    <!-- SLIDE 4: Gen Z & Social Shift -->
+    <section class="slide" id="slide-4">
+        <div class="zigzag-top"></div>
+        <div class="floating-shape shape-1"></div>
+
+        <div class="slide-content">
+            <h2 class="slide-title">Gen Z & Social Shift</h2>
+            <p class="slide-subtitle">Understanding the new generation of digital natives</p>
+
+            <div class="steps-grid">
+                <div class="glass-card step-card">
+                    <div class="step-number">📱</div>
+                    <p class="step-title">Visual-first platforms dominate<br><small
+                            style="color: var(--color-text-muted);">Reels, Shorts, TikTok</small></p>
+                </div>
+                <div class="glass-card step-card">
+                    <div class="step-number">💫</div>
+                    <p class="step-title">Dating = Social Discovery<br><small
+                            style="color: var(--color-text-muted);">Beyond traditional apps</small></p>
+                </div>
+                <div class="glass-card step-card">
+                    <div class="step-number">✨</div>
+                    <p class="step-title">Trust via Vibes & Content<br><small
+                            style="color: var(--color-text-muted);">Authenticity matters</small></p>
+                </div>
+                <div class="glass-card step-card">
+                    <div class="step-number">💎</div>
+                    <p class="step-title">Pay for Speed & Status<br><small
+                            style="color: var(--color-text-muted);">Premium experiences</small></p>
+                </div>
+            </div>
+        </div>
+
+        <span class="slide-number">04 / 11</span>
+        <div class="zigzag-bottom"></div>
+    </section>
+
+    <!-- SLIDE 5: The Solution -->
+    <section class="slide" id="slide-5">
+        <div class="zigzag-top"></div>
+        <div class="floating-shape shape-2"></div>
+
+        <div class="slide-content" style="text-align: center;">
+            <h2 class="slide-title">The Solution</h2>
+            <p class="slide-subtitle" style="max-width: 800px; margin: 0 auto var(--spacing-lg);">
+                AI Baddie Finder ranks and surfaces high-quality profiles using AI-driven signals.
+            </p>
+
+            <div class="glass-card" style="max-width: 700px; margin: 0 auto;">
+                <div style="display: grid; gap: var(--spacing-md); text-align: center; padding: var(--spacing-md);">
+                    <div
+                        style="font-family: var(--font-display); font-size: 2.5rem; background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                        No Blind Swiping
+                    </div>
+                    <div style="font-size: 1.2rem; color: var(--color-text-muted);">
+                        No randomness. Faster, better discovery.
+                    </div>
+                    <div
+                        style="display: flex; justify-content: center; gap: var(--spacing-md); flex-wrap: wrap; margin-top: var(--spacing-sm);">
+                        <span
+                            style="background: rgba(101, 175, 112, 0.2); padding: 8px 20px; border-radius: 100px; color: var(--color-green);">🎯
+                            AI-Ranked</span>
+                        <span
+                            style="background: rgba(255, 123, 74, 0.2); padding: 8px 20px; border-radius: 100px; color: var(--color-orange);">⚡
+                            High-Intent</span>
+                        <span
+                            style="background: rgba(235, 175, 211, 0.2); padding: 8px 20px; border-radius: 100px; color: var(--color-pink);">💝
+                            Quality Matches</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <span class="slide-number">05 / 11</span>
+        <div class="zigzag-bottom"></div>
+    </section>
+
+    <!-- SLIDE 6: Product Experience -->
+    <section class="slide" id="slide-6">
+        <div class="zigzag-top"></div>
+        <div class="floating-shape shape-3"></div>
+
+        <div class="slide-content">
+            <h2 class="slide-title">Product Experience</h2>
+            <p class="slide-subtitle">Seamless journey from signup to connection</p>
+
+            <div class="steps-grid">
+                <div class="glass-card step-card">
+                    <div class="step-number">1</div>
+                    <p class="step-title">User onboarding and intent capture</p>
+                </div>
+                <div class="glass-card step-card">
+                    <div class="step-number">2</div>
+                    <p class="step-title">AI analyzes visual and behavioral signals</p>
+                </div>
+                <div class="glass-card step-card">
+                    <div class="step-number">3</div>
+                    <p class="step-title">Ranked discovery feed</p>
+                </div>
+                <div class="glass-card step-card">
+                    <div class="step-number">4</div>
+                    <p class="step-title">Match, unlock, and connect</p>
+                </div>
+            </div>
+        </div>
+
+        <span class="slide-number">06 / 11</span>
+        <div class="zigzag-bottom"></div>
+    </section>
+
+    <!-- SLIDE 7: AI Moat & Defensibility -->
+    <section class="slide" id="slide-7">
+        <div class="zigzag-top"></div>
+        <div class="floating-shape shape-1"></div>
+
+        <div class="slide-content">
+            <h2 class="slide-title">AI Moat & Defensibility</h2>
+            <p class="slide-subtitle">Building lasting competitive advantages</p>
+
+            <div class="two-column">
+                <ul class="bullet-list">
+                    <li><strong>Behavioral Attraction Data</strong> — Unique dataset of real preferences</li>
+                    <li><strong>Feedback-Driven Engine</strong> — ML that improves with every interaction</li>
+                    <li><strong>Cultural Relevance</strong> — Algorithms that understand trends</li>
+                    <li><strong>Network Effects</strong> — More users = better matches for everyone</li>
+                </ul>
+                <div class="glass-card" style="text-align: center; padding: var(--spacing-lg);">
+                    <div
+                        style="font-family: var(--font-display); font-size: 5rem; background: var(--gradient-secondary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                        🔒
+                    </div>
+                    <div style="margin-top: var(--spacing-sm); font-size: 1.2rem;">
+                        Strong Data<br>Network Effects
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <span class="slide-number">07 / 11</span>
+        <div class="zigzag-bottom"></div>
+    </section>
+
+    <!-- SLIDE 8: Product-Market Fit -->
+    <section class="slide" id="slide-8">
+        <div class="zigzag-top"></div>
+        <div class="floating-shape shape-2"></div>
+
+        <div class="slide-content">
+            <h2 class="slide-title">Product–Market Fit</h2>
+            <p class="slide-subtitle">Validation signals that matter</p>
+
+            <div class="model-grid">
+                <div class="glass-card model-card">
+                    <div class="model-icon">💖</div>
+                    <div class="model-title">Clear Emotional Payoff</div>
+                    <div class="model-desc">Users feel valued and seen</div>
+                </div>
+                <div class="glass-card model-card">
+                    <div class="model-icon">⚡</div>
+                    <div class="model-title">Faster Connections</div>
+                    <div class="model-desc">Meaningful matches in less time</div>
+                </div>
+                <div class="glass-card model-card">
+                    <div class="model-icon">🔄</div>
+                    <div class="model-title">Strong Retention</div>
+                    <div class="model-desc">Users keep coming back</div>
+                </div>
+                <div class="glass-card model-card">
+                    <div class="model-icon">💰</div>
+                    <div class="model-title">Monetization Ready</div>
+                    <div class="model-desc">Through access and visibility</div>
+                </div>
+            </div>
+        </div>
+
+        <span class="slide-number">08 / 11</span>
+        <div class="zigzag-bottom"></div>
+    </section>
+
+    <!-- SLIDE 9: Business Model -->
+    <section class="slide" id="slide-9">
+        <div class="zigzag-top"></div>
+        <div class="floating-shape shape-3"></div>
+
+        <div class="slide-content">
+            <div class="two-column">
+                <div>
+                    <h2 class="slide-title">Business Model</h2>
+                    <p class="slide-subtitle">Multiple revenue streams</p>
+
+                    <ul class="bullet-list" style="margin-top: var(--spacing-md);">
+                        <li><strong>Subscriptions</strong> — Monthly/annual premium access</li>
+                        <li><strong>AI Boosts & Credits</strong> — Pay-per-use visibility</li>
+                        <li><strong>Premium Discovery</strong> — Exclusive feature access</li>
+                        <li><strong>Creator Verification</strong> — Tools for influencers</li>
+                    </ul>
+                </div>
+                <div class="glass-card">
+                    <div class="chart-container">
+                        <canvas id="businessChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <span class="slide-number">09 / 11</span>
+        <div class="zigzag-bottom"></div>
+    </section>
+
+    <!-- SLIDE 10: Go-To-Market Strategy -->
+    <section class="slide" id="slide-10">
+        <div class="zigzag-top"></div>
+        <div class="floating-shape shape-1"></div>
+
+        <div class="slide-content">
+            <h2 class="slide-title">Go-To-Market Strategy</h2>
+            <p class="slide-subtitle">Launching with momentum</p>
+
+            <div class="steps-grid">
+                <div class="glass-card step-card">
+                    <div class="step-number">🎤</div>
+                    <p class="step-title">Influencer & Creator Onboarding<br><small
+                            style="color: var(--color-text-muted);">Build with top voices</small></p>
+                </div>
+                <div class="glass-card step-card">
+                    <div class="step-number">📲</div>
+                    <p class="step-title">Viral Social Loops<br><small style="color: var(--color-text-muted);">Reels &
+                            TikTok native</small></p>
+                </div>
+                <div class="glass-card step-card">
+                    <div class="step-number">🏙️</div>
+                    <p class="step-title">Invite-Only City Launches<br><small
+                            style="color: var(--color-text-muted);">Create exclusivity</small></p>
+                </div>
+                <div class="glass-card step-card">
+                    <div class="step-number">🔗</div>
+                    <p class="step-title">Referral-Based Growth<br><small style="color: var(--color-text-muted);">Users
+                            bring users</small></p>
+                </div>
+            </div>
+        </div>
+
+        <span class="slide-number">10 / 11</span>
+        <div class="zigzag-bottom"></div>
+    </section>
+
+    <!-- SLIDE 11: Market Opportunity & Ask -->
+    <section class="slide" id="slide-11">
+        <div class="zigzag-top"></div>
+        <div class="floating-shape shape-2"></div>
+        <div class="floating-shape shape-3"></div>
+
+        <div class="slide-content">
+            <div class="two-column">
+                <div>
+                    <h2 class="slide-title">Market Opportunity</h2>
+                    <ul class="bullet-list">
+                        <li>Large and growing global dating & social discovery market</li>
+                        <li>Gen Z offers long-term lifetime value</li>
+                        <li>Funding will be used for product, AI, and growth</li>
+                    </ul>
+
+                    <div class="vision-box">
+                        <div class="vision-label">Our Vision</div>
+                        <div class="vision-text">Become the AI layer for human attraction & discovery</div>
+                    </div>
+                </div>
+                <div class="glass-card">
+                    <div class="chart-container">
+                        <canvas id="marketChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <span class="slide-number">11 / 11</span>
+        <div class="zigzag-bottom"></div>
+    </section>
+
+    <script>
+        // ===== NAVIGATION DOTS =====
+        const slides = document.querySelectorAll('.slide');
+        const navDots = document.getElementById('navDots');
+
+        slides.forEach((slide, index) => {
+            const dot = document.createElement('button');
+            dot.className = 'nav-dot';
+            dot.setAttribute('aria-label', `Go to slide ${index + 1}`);
+            dot.addEventListener('click', () => {
+                slide.scrollIntoView({ behavior: 'smooth' });
+            });
+            navDots.appendChild(dot);
+        });
+
+        // Update active dot on scroll
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const slideIndex = Array.from(slides).indexOf(entry.target);
+                    document.querySelectorAll('.nav-dot').forEach((dot, i) => {
+                        dot.classList.toggle('active', i === slideIndex);
+                    });
+                }
+            });
+        }, { threshold: 0.5 });
+
+        slides.forEach(slide => observer.observe(slide));
+
+        // ===== KEYBOARD NAVIGATION =====
+        document.addEventListener('keydown', (e) => {
+            const currentSlide = Array.from(slides).findIndex(slide => {
+                const rect = slide.getBoundingClientRect();
+                return rect.top >= -100 && rect.top <= 100;
+            });
+
+            if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+                e.preventDefault();
+                if (currentSlide < slides.length - 1) {
+                    slides[currentSlide + 1].scrollIntoView({ behavior: 'smooth' });
+                }
+            } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+                e.preventDefault();
+                if (currentSlide > 0) {
+                    slides[currentSlide - 1].scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+        });
+
+        // ===== CHART.JS CONFIGURATIONS =====
+        const chartColors = {
+            green: '#65AF70',
+            orange: '#FF7B4A',
+            pink: '#EBAFD3',
+            peach: '#FFE5C9'
+        };
+
+        Chart.defaults.color = '#ffffff';
+        Chart.defaults.font.family = "'Montserrat Alternates', sans-serif";
+
+        // Heartbreak Chart - Vibrant Bar Chart
+        new Chart(document.getElementById('heartbreakChart'), {
+            type: 'bar',
+            data: {
+                labels: ['2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024', '2025*'],
+                datasets: [{
+                    label: 'Heartbreaks (Millions)',
+                    data: [18, 22, 27, 35, 46, 61, 79, 104, 138, 180, 230],
+                    backgroundColor: [
+                        chartColors.green,
+                        chartColors.peach,
+                        chartColors.pink,
+                        chartColors.orange,
+                        chartColors.green,
+                        chartColors.peach,
+                        chartColors.pink,
+                        chartColors.orange,
+                        chartColors.green,
+                        chartColors.peach,
+                        chartColors.orange // Final 2025 peak in vibrant orange
+                    ],
+                    borderRadius: 12,
+                    borderSkipped: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false // Hide legend to match the clean look of the image
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(13, 13, 26, 0.9)',
+                        titleFont: { size: 14, weight: 'bold' },
+                        bodyFont: { size: 13 },
+                        padding: 12,
+                        callbacks: {
+                            label: (context) => `💔 ${context.raw}M heartbreaks`
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { size: 12, weight: '600' } }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(255,255,255,0.05)' },
+                        ticks: {
+                            callback: (value) => value + 'M',
+                            font: { size: 12 }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Problem Chart - Horizontal Bar
+        new Chart(document.getElementById('problemChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Decision Fatigue', 'Ghosting Rate', 'Low Match Quality', 'Discovery Issues'],
+                datasets: [{
+                    data: [78, 67, 72, 65],
+                    backgroundColor: [
+                        chartColors.orange,
+                        chartColors.pink,
+                        chartColors.peach,
+                        chartColors.green
+                    ],
+                    borderRadius: 8,
+                    borderSkipped: false,
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: (context) => `${context.raw}% of users affected`
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        max: 100,
+                        grid: { color: 'rgba(255,255,255,0.1)' },
+                        ticks: { callback: (value) => value + '%' }
+                    },
+                    y: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+
+        // Business Model Chart - Doughnut
+        new Chart(document.getElementById('businessChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Subscriptions', 'AI Boosts', 'Premium Discovery', 'Creator Tools'],
+                datasets: [{
+                    data: [40, 25, 20, 15],
+                    backgroundColor: [
+                        chartColors.green,
+                        chartColors.orange,
+                        chartColors.pink,
+                        chartColors.peach
+                    ],
+                    borderWidth: 0,
+                    hoverOffset: 10
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                cutout: '65%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true,
+                            pointStyle: 'circle'
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: (context) => `${context.label}: ${context.raw}%`
+                        }
+                    }
+                }
+            }
+        });
+
+        // Market Opportunity Chart - Line
+        new Chart(document.getElementById('marketChart'), {
+            type: 'line',
+            data: {
+                labels: ['2024', '2025', '2026', '2027', '2028', '2029'],
+                datasets: [{
+                    label: 'Dating App Market ($B)',
+                    data: [9.5, 11.2, 13.4, 16.1, 19.3, 23.2],
+                    borderColor: chartColors.orange,
+                    backgroundColor: 'rgba(255, 123, 74, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: chartColors.orange,
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 5,
+                    pointHoverRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: (context) => `$${context.raw}B Market Size`
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { color: 'rgba(255,255,255,0.05)' }
+                    },
+                    y: {
+                        grid: { color: 'rgba(255,255,255,0.1)' },
+                        ticks: { callback: (value) => '$' + value + 'B' }
+                    }
+                }
+            }
+        });
+
+        // Initialize first dot as active
+        document.querySelector('.nav-dot')?.classList.add('active');
+    </script>
+</body>
+
+</html>
